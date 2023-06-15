@@ -1,6 +1,8 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 import config from "../../config";
+import ApiError from "../errors/ApiError";
+import handleCastError from "../errors/CastError";
 import handleZodError from "../errors/ZodError";
 import { IGenericErrorMessage } from "../errors/error.interface";
 export const globalErrorHandler: ErrorRequestHandler = (
@@ -19,6 +21,22 @@ export const globalErrorHandler: ErrorRequestHandler = (
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
     errorMessages = simplifiedError.errorMessages;
+  } else if (error?.name === "CastError") {
+    const simplifiedError = handleCastError(error);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorMessages = simplifiedError.errorMessages;
+  } else if (error instanceof ApiError) {
+    statusCode = error?.statusCode;
+    message = error.message;
+    errorMessages = error?.message
+      ? [
+          {
+            path: "",
+            message: error?.message,
+          },
+        ]
+      : [];
   }
   res.status(statusCode).json({
     success: false,

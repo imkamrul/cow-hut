@@ -1,12 +1,35 @@
+import httpStatus from "http-status";
 import config from "../../../config";
+import ApiError from "../../errors/ApiError";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
-
 export const saveUser = async (user: IUser): Promise<IUser | null> => {
-  console.log("user :", user);
   if (!user.password) {
     user.password = config.default_pass as string;
   }
   const result = await User.create(user);
+  return result;
+};
+export const getAllUser = async (): Promise<IUser[] | null> => {
+  const result = await User.find();
+  return result;
+};
+export const getSingleUser = async (id: string): Promise<IUser | null> => {
+  const result = await User.findOne({ _id: id });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found !");
+  }
+  return result;
+};
+export const deleteUser = async (id: string): Promise<IUser | null> => {
+  const result = await User.findByIdAndDelete({ _id: id });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found !");
+  }
+  return result;
+};
+export const updateUser = async (id: string): Promise<IUser | null> => {
+  const result = await User.findOne({ _id: id });
+  console.log("result :", result);
   return result;
 };
