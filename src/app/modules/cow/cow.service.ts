@@ -46,12 +46,6 @@ export const getAllCows = async (
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
 
-  Object.entries(whereConditions).forEach(([key, value]) => {
-    const formattedValue =
-      typeof value === "object" ? JSON.stringify(value) : value;
-    console.log(`Key: ${key}, Value: ${formattedValue}`);
-  });
-
   const result = await Cow.find(whereConditions)
     .sort(sortConditions)
     .skip(skip)
