@@ -34,3 +34,12 @@ export type ICow = {
 };
 
 export type CowModel = Model<ICow, Record<string, unknown>>;
+
+export type ICowsFilters = {
+  sortBy?: string;
+  sortOrder?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  location?: string;
+  searchTerm?: string;
+};

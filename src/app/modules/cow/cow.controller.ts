@@ -1,7 +1,10 @@
 import { Request, RequestHandler, Response } from "express";
 import httpStatus from "http-status";
 import catchAsync from "../../common/catchAsync";
+import { paginationFields } from "../../common/pagination";
+import pick from "../../common/pick";
 import sendResponse from "../../common/response";
+import { cowFilterOptions } from "./cow.constant";
 import { ICow } from "./cow.interface";
 import {
   deleteCow,
@@ -25,13 +28,17 @@ export const createCow: RequestHandler = catchAsync(
 );
 export const getCows: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await getAllCows();
+    const filters = pick(req.query, cowFilterOptions);
+    const paginationOptions = pick(req.query, paginationFields);
+
+    const result = await getAllCows(filters, paginationOptions);
 
     sendResponse<ICow[]>(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "Cows retrieved successfully",
-      data: result,
+      meta: result?.meta,
+      data: result?.data,
     });
   }
 );
