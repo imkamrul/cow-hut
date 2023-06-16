@@ -65,7 +65,8 @@ export const deleteUserById: RequestHandler = catchAsync(
 export const updateUserById: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.id;
-    const result = await updateUser(id);
+    const updatedData = req.body;
+    const result = await updateUser(id, updatedData);
 
     sendResponse<IUser>(res, {
       success: true,

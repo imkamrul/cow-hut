@@ -28,8 +28,15 @@ export const deleteUser = async (id: string): Promise<IUser | null> => {
   }
   return result;
 };
-export const updateUser = async (id: string): Promise<IUser | null> => {
-  const result = await User.findOne({ _id: id });
-  console.log("result :", result);
+export const updateUser = async (
+  id: string,
+  payload: Partial<IUser>
+): Promise<IUser | null> => {
+  const result = await User.findOneAndUpdate({ _id: id }, payload, {
+    new: true,
+  });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found !");
+  }
   return result;
 };
