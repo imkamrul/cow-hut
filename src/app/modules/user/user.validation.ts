@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { role } from "../../common/constant";
+import { role } from "./user.constant";
+
 export const CreateUserZodSchema = z.object({
   body: z.object({
     role: z.enum([...role] as [string, ...string[]], {
@@ -23,9 +24,11 @@ export const CreateUserZodSchema = z.object({
     budget: z.number({
       required_error: "Budget is required",
     }),
-    income: z.number({
-      required_error: "Income is required",
-    }),
+    income: z
+      .number({
+        required_error: "Income is required",
+      })
+      .optional(),
   }),
 });
 export const UpdateUserZodSchema = z.object({

@@ -3,6 +3,8 @@ import { ZodError } from "zod";
 import config from "../../config";
 import ApiError from "../errors/ApiError";
 import handleCastError from "../errors/CastError";
+import handleStrictPopulateError from "../errors/StrictPopulateError";
+import handleValidationError from "../errors/ValidationError";
 import handleZodError from "../errors/ZodError";
 import { IGenericErrorMessage } from "../errors/error.interface";
 export const globalErrorHandler: ErrorRequestHandler = (
@@ -12,7 +14,7 @@ export const globalErrorHandler: ErrorRequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("global-error :", error.name, error.message);
+  // console.log("global-error :", error.name, error.message);
   let statusCode = 500;
   let message = "Something went wrong !";
   let errorMessages: IGenericErrorMessage[] = [];
@@ -37,6 +39,16 @@ export const globalErrorHandler: ErrorRequestHandler = (
           },
         ]
       : [];
+  } else if (error?.name === "ValidationError") {
+    const simplifiedError = handleValidationError(error);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorMessages = simplifiedError.errorMessages;
+  } else if (error?.name === "StrictPopulateError") {
+    const simplifiedError = handleStrictPopulateError(error);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorMessages = simplifiedError.errorMessages;
   }
   res.status(statusCode).json({
     success: false,

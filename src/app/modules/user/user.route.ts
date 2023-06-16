@@ -9,7 +9,7 @@ import {
 } from "./user.controller";
 import { CreateUserZodSchema, UpdateUserZodSchema } from "./user.validation";
 const router = express.Router();
-router.post("/", validateRequest(CreateUserZodSchema), createUser);
+router.post("/auth/signup", validateRequest(CreateUserZodSchema), createUser);
 router.get("/", getUsers);
 router.get("/:id", getUserById);
 router.delete("/:id", deleteUserById);

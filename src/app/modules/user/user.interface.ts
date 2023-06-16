@@ -1,7 +1,8 @@
 import { Model } from "mongoose";
+export type IUserRole = "buyer" | "seller";
 export type IUser = {
   password: string;
-  role: "buyer" | "seller";
+  role: IUserRole;
   name: {
     firstName: string;
     lastName: string;
