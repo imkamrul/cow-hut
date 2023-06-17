@@ -4,10 +4,19 @@ import { calculatePagination } from "../../common/pagination";
 import { IPaginationOptions } from "../../common/pagination.interface";
 import ApiError from "../../errors/ApiError";
 import { IGenericResponse } from "../../errors/error.interface";
+import { role } from "../user/user.constant";
+import { User } from "../user/user.model";
 import { cowSearchableFields } from "./cow.constant";
 import { ICow, ICowsFilters } from "./cow.interface";
 import { Cow } from "./cow.model";
 export const saveCow = async (cow: ICow): Promise<ICow | null> => {
+  const getUser = await User.findOne({ _id: cow.seller });
+
+  if (!getUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found !");
+  } else if (getUser.role !== role[1]) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User is not a seller !");
+  }
   const result = await Cow.create(cow);
   return result;
 };
@@ -16,6 +25,8 @@ export const getAllCows = async (
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<ICow[]>> => {
   const { searchTerm, ...filtersData } = filters;
+  console.log("filtersData :", filtersData);
+  console.log("searchTerm :", searchTerm);
   const { page, limit, skip, sortBy, sortOrder } =
     calculatePagination(paginationOptions);
 
@@ -45,12 +56,15 @@ export const getAllCows = async (
   }
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
-
+  console.log(JSON.stringify(whereConditions, null, 2));
   const result = await Cow.find(whereConditions)
+
     .sort(sortConditions)
     .skip(skip)
     .limit(limit);
   const total = await Cow.countDocuments(whereConditions);
+  console.log("result :", result);
+  console.log("total :", total);
   return {
     meta: {
       page,

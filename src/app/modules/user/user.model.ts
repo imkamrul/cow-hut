@@ -46,6 +46,9 @@ const userSchema = new Schema<IUser>(
 );
 userSchema.pre("save", function (next) {
   this.income = 0;
+  if (this.role === role[1]) {
+    this.budget = 0;
+  }
   next();
 });
 export const User = model<IUser, UserModel>("User", userSchema);
