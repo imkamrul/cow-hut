@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { SortOrder } from "mongoose";
+import { SortOrder, Types } from "mongoose";
 import { calculatePagination } from "../../common/pagination";
 import { IPaginationOptions } from "../../common/pagination.interface";
 import ApiError from "../../errors/ApiError";
@@ -60,7 +60,9 @@ export const getAllCows = async (
     data: result,
   };
 };
-export const getSingleCow = async (id: string): Promise<ICow | null> => {
+export const getSingleCow = async (
+  id: string | Types.ObjectId
+): Promise<ICow | null> => {
   const result = await Cow.findOne({ _id: id }).populate("seller");
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Cow not found !");

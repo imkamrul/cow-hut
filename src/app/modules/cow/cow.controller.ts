@@ -15,8 +15,8 @@ import {
 } from "./cow.service";
 export const createCow: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const userData = req.body;
-    const result = await saveCow(userData);
+    const cowData = req.body;
+    const result = await saveCow(cowData);
 
     sendResponse<ICow>(res, {
       success: true,

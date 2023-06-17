@@ -39,18 +39,20 @@ export const UpdateUserZodSchema = z.object({
       })
       .optional(),
     password: z.string().optional(),
-    name: z.object({
-      firstName: z
-        .string({
-          required_error: "First name is required",
-        })
-        .optional(),
-      lastName: z
-        .string({
-          required_error: "Last name is required",
-        })
-        .optional(),
-    }),
+    name: z
+      .object({
+        firstName: z
+          .string({
+            required_error: "First name is required",
+          })
+          .optional(),
+        lastName: z
+          .string({
+            required_error: "Last name is required",
+          })
+          .optional(),
+      })
+      .optional(),
     phoneNumber: z
       .string({
         required_error: "Phone number is required",
