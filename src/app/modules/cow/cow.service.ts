@@ -25,8 +25,7 @@ export const getAllCows = async (
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<ICow[]>> => {
   const { searchTerm, ...filtersData } = filters;
-  console.log("filtersData :", filtersData);
-  console.log("searchTerm :", searchTerm);
+
   const { page, limit, skip, sortBy, sortOrder } =
     calculatePagination(paginationOptions);
 
@@ -63,8 +62,7 @@ export const getAllCows = async (
     .skip(skip)
     .limit(limit);
   const total = await Cow.countDocuments(whereConditions);
-  console.log("result :", result);
-  console.log("total :", total);
+
   return {
     meta: {
       page,
