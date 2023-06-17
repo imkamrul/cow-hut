@@ -16,6 +16,7 @@ exports.updateUser = exports.deleteUser = exports.getSingleUser = exports.getAll
 const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../../../config"));
 const ApiError_1 = __importDefault(require("../../errors/ApiError"));
+const cow_model_1 = require("../cow/cow.model");
 const user_model_1 = require("./user.model");
 const saveUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
     if (!user.password) {
@@ -40,6 +41,8 @@ const getSingleUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getSingleUser = getSingleUser;
 const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_model_1.User.findByIdAndDelete({ _id: id });
+    const test = yield cow_model_1.Cow.deleteMany({ seller: id });
+    console.log("test :", test);
     if (!result) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User not found !");
     }

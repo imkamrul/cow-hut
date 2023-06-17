@@ -41,7 +41,8 @@ exports.UpdateUserZodSchema = zod_1.z.object({
         })
             .optional(),
         password: zod_1.z.string().optional(),
-        name: zod_1.z.object({
+        name: zod_1.z
+            .object({
             firstName: zod_1.z
                 .string({
                 required_error: "First name is required",
@@ -52,7 +53,8 @@ exports.UpdateUserZodSchema = zod_1.z.object({
                 required_error: "Last name is required",
             })
                 .optional(),
-        }),
+        })
+            .optional(),
         phoneNumber: zod_1.z
             .string({
             required_error: "Phone number is required",

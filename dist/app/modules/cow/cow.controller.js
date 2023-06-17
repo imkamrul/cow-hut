@@ -21,8 +21,8 @@ const response_1 = __importDefault(require("../../common/response"));
 const cow_constant_1 = require("./cow.constant");
 const cow_service_1 = require("./cow.service");
 exports.createCow = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userData = req.body;
-    const result = yield (0, cow_service_1.saveCow)(userData);
+    const cowData = req.body;
+    const result = yield (0, cow_service_1.saveCow)(cowData);
     (0, response_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
