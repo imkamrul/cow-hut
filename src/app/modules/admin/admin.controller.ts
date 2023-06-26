@@ -3,12 +3,8 @@ import httpStatus from "http-status";
 import config from "../../../config";
 import catchAsync from "../../common/catchAsync";
 import sendResponse from "../../common/response";
-import {
-  IAdmin,
-  ILoginUserResponse,
-  IRefreshTokenResponse,
-} from "./admin.interface";
-import { handleRefreshToken, logInUser, saveAdmin } from "./admin.service";
+import { IAdmin, ILoginUserResponse } from "./admin.interface";
+import { logInUser, saveAdmin } from "./admin.service";
 export const createAdmin: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const adminData = req.body;
@@ -46,24 +42,3 @@ export const logInAdmin: RequestHandler = catchAsync(
     });
   }
 );
-export const refreshToken = catchAsync(async (req: Request, res: Response) => {
-  const { refreshToken } = req.cookies;
-
-  const result = await handleRefreshToken(refreshToken);
-
-  // set refresh token into cookie
-
-  const cookieOptions = {
-    secure: config.env === "production",
-    httpOnly: true,
-  };
-
-  res.cookie("refreshToken", refreshToken, cookieOptions);
-
-  sendResponse<IRefreshTokenResponse>(res, {
-    statusCode: 200,
-    success: true,
-    message: "User login successfully !",
-    data: result,
-  });
-});

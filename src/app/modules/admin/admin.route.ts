@@ -1,6 +1,6 @@
 import express from "express";
 import validateRequest from "../../middleware/validateRequest";
-import { createAdmin, logInAdmin, refreshToken } from "./admin.controller";
+import { createAdmin, logInAdmin } from "./admin.controller";
 import { CreateAdminZodSchema, CreateLogInZodSchema } from "./admin.validation";
 
 const router = express.Router();
@@ -11,6 +11,5 @@ router.post(
   createAdmin
 );
 router.post("/login", validateRequest(CreateLogInZodSchema), logInAdmin);
-router.post("/refresh", validateRequest(CreateLogInZodSchema), refreshToken);
 
 export const AdminRoutes = router;

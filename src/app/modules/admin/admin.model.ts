@@ -60,10 +60,8 @@ AdminSchema.statics.isPasswordMatched = async function (
 };
 
 AdminSchema.pre("save", async function (next) {
-  console.log("pre save");
-  const admin = this;
-  admin.password = await bcrypt.hash(
-    admin.password,
+  this.password = await bcrypt.hash(
+    this.password,
     Number(config.bycrypt_salt_rounds)
   );
   next();

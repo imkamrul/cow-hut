@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 export type IUserRole = "buyer" | "seller";
 export type IUser = {
-  _id?: string;
+  id?: string;
   password: string;
   role: IUserRole;
   name: {
@@ -13,4 +13,9 @@ export type IUser = {
   budget: number;
   income: number;
 };
-export type UserModel = Model<IUser, Record<string, unknown>>;
+export type UserModel = {
+  isPasswordMatched(
+    givenPassword: string,
+    savedPassword: string
+  ): Promise<boolean>;
+} & Model<IUser>;

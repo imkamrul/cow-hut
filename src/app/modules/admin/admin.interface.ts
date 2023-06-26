@@ -10,16 +10,13 @@ export type IAdmin = {
   };
   phoneNumber: string;
   address: string;
-  needsPasswordChange: true | false;
 };
 export type ILogInUser = {
   phoneNumber: string;
   password: string;
 };
 export type AdminModel = {
-  isAdminExist(
-    id: string
-  ): Promise<Pick<IAdmin, "id" | "password" | "role" | "needsPasswordChange">>;
+  isAdminExist(id: string): Promise<Pick<IAdmin, "id" | "password" | "role">>;
   isPasswordMatched(
     givenPassword: string,
     savedPassword: string
