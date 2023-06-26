@@ -17,10 +17,11 @@ export const auth =
       let verifiedUser = null;
 
       verifiedUser = verifyToken(token, config.jwt.secret as Secret);
+      console.log("verifiedUser :", verifiedUser, requiredRoles);
 
       req.user = verifiedUser;
       if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-        throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+        throw new ApiError(httpStatus.FORBIDDEN, "Forbidden Access");
       }
       next();
     } catch (error) {

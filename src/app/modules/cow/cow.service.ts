@@ -81,7 +81,18 @@ export const getSingleCow = async (
   }
   return result;
 };
-export const deleteCow = async (id: string): Promise<ICow | null> => {
+export const deleteCow = async (
+  id: string,
+  userId: string
+): Promise<ICow | null> => {
+  const cowFind = await Cow.findOne({ _id: id });
+
+  if (!cowFind) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Cow not found !");
+  }
+  if (cowFind.seller.toString() !== userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden Access");
+  }
   const result = await Cow.findByIdAndDelete({ _id: id });
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Cow not found !");
@@ -91,13 +102,21 @@ export const deleteCow = async (id: string): Promise<ICow | null> => {
 
 export const updateCow = async (
   id: string,
+  userId: string,
   payload: Partial<ICow>
 ): Promise<ICow | null> => {
+  const cowFind = await Cow.findOne({ _id: id });
+
+  if (!cowFind) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Cow not found !");
+  }
+  if (cowFind.seller.toString() !== userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden Access");
+  }
+
   const result = await Cow.findOneAndUpdate({ _id: id }, payload, {
     new: true,
   });
-  if (!result) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Cow not found !");
-  }
+
   return result;
 };

@@ -59,7 +59,8 @@ export const getCowById: RequestHandler = catchAsync(
 export const deleteCowById: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.id;
-    const result = await deleteCow(id);
+    const userId = req.user?.id;
+    const result = await deleteCow(id, userId);
 
     sendResponse<ICow>(res, {
       success: true,
@@ -73,7 +74,8 @@ export const updateCowById: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.id;
     const updatedData = req.body;
-    const result = await updateCow(id, updatedData);
+    const userId = req.user?.id;
+    const result = await updateCow(id, userId, updatedData);
 
     sendResponse<ICow>(res, {
       success: true,
