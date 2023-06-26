@@ -4,7 +4,7 @@ import { role } from "./user.constant";
 export const CreateUserZodSchema = z.object({
   body: z.object({
     role: z.enum([...role] as [string, ...string[]], {
-      required_error: "Gender is required",
+      required_error: "Role is required",
     }),
     password: z.string().optional(),
     name: z.object({

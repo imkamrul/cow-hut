@@ -1,4 +1,5 @@
 import express from "express";
+import { auth } from "../../middleware/Auth";
 import validateRequest from "../../middleware/validateRequest";
 import {
   createCow,
@@ -10,7 +11,7 @@ import {
 import { CowZodSchema, UpdatedCowZodSchema } from "./cow.validation";
 const router = express.Router();
 router.post("/", validateRequest(CowZodSchema), createCow);
-router.get("/", getCows);
+router.get("/", auth("admin"), getCows);
 router.get("/:id", getCowById);
 router.delete("/:id", deleteCowById);
 router.patch("/:id", validateRequest(UpdatedCowZodSchema), updateCowById);

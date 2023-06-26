@@ -44,6 +44,9 @@ const userSchema = new mongoose_1.Schema({
 });
 userSchema.pre("save", function (next) {
     this.income = 0;
+    if (this.role === user_constant_1.role[1]) {
+        this.budget = 0;
+    }
     next();
 });
 exports.User = (0, mongoose_1.model)("User", userSchema);

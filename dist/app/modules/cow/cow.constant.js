@@ -23,10 +23,6 @@ exports.cowBreed = [
 exports.cowLabel = ["for sale", "sold out"];
 exports.cowCategory = ["Dairy", "Beef", "Dual Purpose"];
 exports.cowFilterOptions = [
-    "page",
-    "limit",
-    "sortBy",
-    "sortOrder",
     "minPrice",
     "maxPrice",
     "location",
