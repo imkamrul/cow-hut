@@ -81,6 +81,28 @@ export const getUserById: RequestHandler = catchAsync(
     });
   }
 );
+export const getMyProfile: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { user } = req;
+    if (!user) {
+      // Handle the case when req.user is null
+      // For example, send an error response
+      return sendResponse(res, {
+        success: false,
+        statusCode: httpStatus.UNAUTHORIZED,
+        message: "User not authenticated",
+      });
+    }
+    const result = await getSingleUser(user.id);
+
+    sendResponse<IUser>(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User retrieved successfully",
+      data: result,
+    });
+  }
+);
 export const deleteUserById: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.id;
@@ -99,6 +121,27 @@ export const updateUserById: RequestHandler = catchAsync(
     const id = req.params.id;
     const updatedData = req.body;
     const result = await updateUser(id, updatedData);
+
+    sendResponse<IUser>(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User updated successfully",
+      data: result,
+    });
+  }
+);
+export const updateMyProfile: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { user } = req;
+    if (!user) {
+      return sendResponse(res, {
+        success: false,
+        statusCode: httpStatus.UNAUTHORIZED,
+        message: "User not authenticated",
+      });
+    }
+    const updatedData = req.body;
+    const result = await updateUser(user?.id, updatedData);
 
     sendResponse<IUser>(res, {
       success: true,

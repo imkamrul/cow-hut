@@ -2,6 +2,7 @@ import { Model } from "mongoose";
 export type IUserRole = "buyer" | "seller";
 export type IUser = {
   id?: string;
+  _id?: string;
   password: string;
   role: IUserRole;
   name: {
