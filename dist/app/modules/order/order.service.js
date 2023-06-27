@@ -144,6 +144,20 @@ const getSingleOrderById = (userInfo, id) => __awaiter(void 0, void 0, void 0, f
             },
         ]);
     }
+    else {
+        result = yield order_model_1.Order.findOne(filter).populate([
+            { path: "cow" },
+            { path: "buyer" },
+            {
+                path: "cow",
+                populate: {
+                    path: "seller",
+                    model: "User",
+                    select: "-password",
+                },
+            },
+        ]);
+    }
     console.log("result:", result);
     return result;
 });
