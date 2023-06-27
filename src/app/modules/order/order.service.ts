@@ -159,6 +159,19 @@ export const getSingleOrderById = async (
         },
       },
     ]);
+  } else {
+    result = await Order.findOne(filter).populate([
+      { path: "cow" },
+      { path: "buyer" },
+      {
+        path: "cow",
+        populate: {
+          path: "seller",
+          model: "User",
+          select: "-password",
+        },
+      },
+    ]);
   }
 
   console.log("result:", result);

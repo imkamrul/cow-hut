@@ -53,8 +53,10 @@ exports.getCowById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     });
 }));
 exports.deleteCowById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const id = req.params.id;
-    const result = yield (0, cow_service_1.deleteCow)(id);
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    const result = yield (0, cow_service_1.deleteCow)(id, userId);
     (0, response_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
@@ -63,9 +65,11 @@ exports.deleteCowById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
     });
 }));
 exports.updateCowById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
     const id = req.params.id;
     const updatedData = req.body;
-    const result = yield (0, cow_service_1.updateCow)(id, updatedData);
+    const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
+    const result = yield (0, cow_service_1.updateCow)(id, userId, updatedData);
     (0, response_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
