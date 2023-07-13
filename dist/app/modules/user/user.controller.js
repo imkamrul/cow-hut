@@ -24,6 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.refreshToken = exports.updateMyProfile = exports.updateUserById = exports.deleteUserById = exports.getMyProfile = exports.getUserById = exports.logInUser = exports.getUsers = exports.createUser = void 0;
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../../../config"));
 const catchAsync_1 = __importDefault(require("../../common/catchAsync"));
@@ -127,6 +128,9 @@ exports.updateMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void
         });
     }
     const updatedData = req.body;
+    if (updatedData.password) {
+        updatedData.password = yield bcrypt_1.default.hash(updatedData.password, Number(config_1.default.bycrypt_salt_rounds));
+    }
     const result = yield (0, user_service_1.updateUser)(user === null || user === void 0 ? void 0 : user.id, updatedData);
     (0, response_1.default)(res, {
         success: true,

@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { Request, RequestHandler, Response } from "express";
 import httpStatus from "http-status";
 import config from "../../../config";
@@ -141,6 +142,12 @@ export const updateMyProfile: RequestHandler = catchAsync(
       });
     }
     const updatedData = req.body;
+    if (updatedData.password) {
+      updatedData.password = await bcrypt.hash(
+        updatedData.password,
+        Number(config.bycrypt_salt_rounds)
+      );
+    }
     const result = await updateUser(user?.id, updatedData);
 
     sendResponse<IUser>(res, {
