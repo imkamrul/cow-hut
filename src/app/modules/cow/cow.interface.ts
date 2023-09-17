@@ -1,5 +1,5 @@
 import { Model, Types } from "mongoose";
-import { IUser } from "../user/user.interface";
+import { IUser } from "../auth/auth.interface";
 
 export type ICowLocation =
   | "Dhaka"

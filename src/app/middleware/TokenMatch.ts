@@ -4,26 +4,27 @@ import { Secret } from "jsonwebtoken";
 import config from "../../config";
 import { verifyToken } from "../common/jwtHelpeer";
 import ApiError from "../errors/ApiError";
-export const auth =
-  (...requiredRoles: string[]) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+import { User } from "../modules/auth/auth.model";
+export const tokenMatch =
+  () => async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers?.authorization?.split(" ")[1];
 
       if (!token) {
         throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
       }
-
       let verifiedUser = null;
 
       verifiedUser = verifyToken(token, config.jwt.secret as Secret);
-      console.log("verifiedUser :", verifiedUser, requiredRoles);
-
-      req.user = verifiedUser;
-
-      if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-        throw new ApiError(httpStatus.FORBIDDEN, "Forbidden Access");
+      const findUser = await User.findOne({
+        _id: verifiedUser?.id,
+        role: verifiedUser?.role,
+        token: token,
+      });
+      if (!findUser) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
       }
+
       next();
     } catch (error) {
       next(error);

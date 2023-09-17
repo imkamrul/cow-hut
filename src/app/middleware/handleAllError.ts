@@ -14,7 +14,7 @@ export const globalErrorHandler: ErrorRequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  // console.log("global-error :", error.name, error.message);
+  console.log("global-error :", error.name, error.message);
   let statusCode = 500;
   let message = "Something went wrong !";
   let errorMessages: IGenericErrorMessage[] = [];

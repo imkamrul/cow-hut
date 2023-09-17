@@ -1,9 +1,7 @@
 import express from "express";
-import { AdminRoutes } from "../modules/admin/admin.route";
 import { AuthRoutes } from "../modules/auth/auth.route";
 import { CowRoutes } from "../modules/cow/cow.route";
 import { OrderRoutes } from "../modules/order/order.route";
-import { UserRoutes } from "../modules/user/user.route";
 const router = express.Router();
 
 const moduleRoutes = [
@@ -11,10 +9,7 @@ const moduleRoutes = [
     path: "/auth",
     route: AuthRoutes,
   },
-  {
-    path: "/users",
-    route: UserRoutes,
-  },
+
   {
     path: "/cows",
     route: CowRoutes,
@@ -22,10 +17,6 @@ const moduleRoutes = [
   {
     path: "/orders",
     route: OrderRoutes,
-  },
-  {
-    path: "/admins",
-    route: AdminRoutes,
   },
 ];
 

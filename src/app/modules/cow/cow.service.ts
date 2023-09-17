@@ -4,8 +4,9 @@ import { calculatePagination } from "../../common/pagination";
 import { IPaginationOptions } from "../../common/pagination.interface";
 import ApiError from "../../errors/ApiError";
 import { IGenericResponse } from "../../errors/error.interface";
-import { role } from "../user/user.constant";
-import { User } from "../user/user.model";
+
+import { role } from "../auth/auth.constant";
+import { User } from "../auth/auth.model";
 import { cowSearchableFields } from "./cow.constant";
 import { ICow, ICowsFilters } from "./cow.interface";
 import { Cow } from "./cow.model";
