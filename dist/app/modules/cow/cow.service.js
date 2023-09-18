@@ -27,16 +27,16 @@ exports.updateCow = exports.deleteCow = exports.getSingleCow = exports.getAllCow
 const http_status_1 = __importDefault(require("http-status"));
 const pagination_1 = require("../../common/pagination");
 const ApiError_1 = __importDefault(require("../../errors/ApiError"));
-const user_constant_1 = require("../user/user.constant");
-const user_model_1 = require("../user/user.model");
+const auth_constant_1 = require("../auth/auth.constant");
+const auth_model_1 = require("../auth/auth.model");
 const cow_constant_1 = require("./cow.constant");
 const cow_model_1 = require("./cow.model");
 const saveCow = (cow) => __awaiter(void 0, void 0, void 0, function* () {
-    const getUser = yield user_model_1.User.findOne({ _id: cow.seller });
+    const getUser = yield auth_model_1.User.findOne({ _id: cow.seller });
     if (!getUser) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User not found !");
     }
-    else if (getUser.role !== user_constant_1.role[1]) {
+    else if (getUser.role !== auth_constant_1.role[1]) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User is not a seller !");
     }
     const result = yield cow_model_1.Cow.create(cow);
@@ -69,7 +69,6 @@ const getAllCows = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
         });
     }
     const whereConditions = andConditions.length > 0 ? { $and: andConditions } : {};
-    console.log(JSON.stringify(whereConditions, null, 2));
     const result = yield cow_model_1.Cow.find(whereConditions)
         .sort(sortConditions)
         .skip(skip)

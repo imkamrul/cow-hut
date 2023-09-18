@@ -1,8 +1,8 @@
+import { v2 as cloudinary } from "cloudinary";
 import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import config from "./config/index";
-
 process.on("uncaughtException", (error) => {
   console.log(error);
   process.exit(1);
@@ -17,6 +17,12 @@ async function main() {
 
     server = app.listen(config.port, () => {
       console.log(`Application  listening on port ${config.port}`);
+    });
+
+    cloudinary.config({
+      cloud_name: config.CLOUD_NAME,
+      api_key: config.API_KEY,
+      api_secret: config.API_SECRET,
     });
   } catch (err) {
     console.log("Failed to connect database", err);

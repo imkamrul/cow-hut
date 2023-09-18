@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import fileUpload from "express-fileupload";
 import httpStatus from "http-status";
 import { JwtPayload, Secret } from "jsonwebtoken";
 import { SortOrder, Types } from "mongoose";
@@ -8,6 +9,7 @@ import { calculatePagination } from "../../common/pagination";
 import { IPaginationOptions } from "../../common/pagination.interface";
 import ApiError from "../../errors/ApiError";
 import { IGenericResponse } from "../../errors/error.interface";
+import { imageUploader } from "../../middleware/ImageUploader";
 import { role, status, userSearchableFields } from "./auth.constant";
 import {
   ILogInUser,
@@ -130,7 +132,8 @@ export const updateUserPassword = async (
 export const updateProfileInfo = async (
   id: string | Types.ObjectId,
   user: JwtPayload,
-  payload: Partial<IUser>
+  payload: Partial<IUser>,
+  image: fileUpload.UploadedFile
 ): Promise<IUser | null> => {
   let result = null;
 
@@ -155,6 +158,11 @@ export const updateProfileInfo = async (
       httpStatus.CONFLICT,
       "Your email or phone number already exist !"
     );
+  }
+
+  if (image) {
+    const img_url = await imageUploader(image, "user");
+    payload.img_url = img_url;
   }
 
   if (user?.role === role[1]) {

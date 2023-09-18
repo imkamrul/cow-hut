@@ -12,7 +12,6 @@ const StrictPopulateError_1 = __importDefault(require("../errors/StrictPopulateE
 const ValidationError_1 = __importDefault(require("../errors/ValidationError"));
 const ZodError_1 = __importDefault(require("../errors/ZodError"));
 const globalErrorHandler = (error, req, res, next) => {
-    // console.log("global-error :", error.name, error.message);
     let statusCode = 500;
     let message = "Something went wrong !";
     let errorMessages = [];

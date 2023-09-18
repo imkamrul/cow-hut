@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.auth = void 0;
+exports.tokenMatch = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../../config"));
 const jwtHelpeer_1 = require("../common/jwtHelpeer");
 const ApiError_1 = __importDefault(require("../errors/ApiError"));
-const auth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const auth_model_1 = require("../modules/auth/auth.model");
+const tokenMatch = () => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
         const token = (_b = (_a = req.headers) === null || _a === void 0 ? void 0 : _a.authorization) === null || _b === void 0 ? void 0 : _b.split(" ")[1];
@@ -26,9 +27,13 @@ const auth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0,
         }
         let verifiedUser = null;
         verifiedUser = (0, jwtHelpeer_1.verifyToken)(token, config_1.default.jwt.secret);
-        req.user = verifiedUser;
-        if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, "Forbidden Access");
+        const findUser = yield auth_model_1.User.findOne({
+            _id: verifiedUser === null || verifiedUser === void 0 ? void 0 : verifiedUser.id,
+            role: verifiedUser === null || verifiedUser === void 0 ? void 0 : verifiedUser.role,
+            token: token,
+        });
+        if (!findUser) {
+            throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized");
         }
         next();
     }
@@ -36,4 +41,4 @@ const auth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0,
         next(error);
     }
 });
-exports.auth = auth;
+exports.tokenMatch = tokenMatch;

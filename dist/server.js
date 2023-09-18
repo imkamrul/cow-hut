@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const cloudinary_1 = require("cloudinary");
 const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = __importDefault(require("./app"));
 const index_1 = __importDefault(require("./config/index"));
@@ -27,6 +28,11 @@ function main() {
             console.log(`Database is connected successfully`);
             server = app_1.default.listen(index_1.default.port, () => {
                 console.log(`Application  listening on port ${index_1.default.port}`);
+            });
+            cloudinary_1.v2.config({
+                cloud_name: index_1.default.CLOUD_NAME,
+                api_key: index_1.default.API_KEY,
+                api_secret: index_1.default.API_SECRET,
             });
         }
         catch (err) {

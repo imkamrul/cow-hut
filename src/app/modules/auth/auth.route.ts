@@ -20,7 +20,12 @@ import {
   CreateUserZodSchema,
 } from "./auth.validation";
 const router = express.Router();
-router.post("/signup", validateRequest(CreateUserZodSchema), createUser);
+router.post(
+  "/signup",
+
+  validateRequest(CreateUserZodSchema),
+  createUser
+);
 
 router.get("/profile/me", auth(...role), tokenMatch(), getProfileUser);
 router.get("/profile", auth(role[1]), tokenMatch(), getAllUser);

@@ -87,12 +87,15 @@ export const getProfileUser: RequestHandler = catchAsync(
 export const updateProfileUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const updatedData = req.body;
+
+    const image: any = req.files?.img_url;
+
     const id = req.params.id;
     const user = req.user;
     if (!user)
       throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
 
-    const result = await updateProfileInfo(id, user, updatedData);
+    const result = await updateProfileInfo(id, user, updatedData, image);
     sendResponse<IUser>(res, {
       success: true,
       statusCode: httpStatus.OK,

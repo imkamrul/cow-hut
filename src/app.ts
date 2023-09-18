@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application, NextFunction, Request, Response } from "express";
+import fileUpload from "express-fileupload";
 import httpStatus from "http-status";
 import { globalErrorHandler } from "./app/middleware/handleAllError";
 import routes from "./app/routes";
@@ -11,8 +12,14 @@ app.use(cors());
 //parser
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", routes);
+
 //global error handler
 app.use(globalErrorHandler);
 //handle not found

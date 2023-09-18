@@ -9,6 +9,10 @@ export default {
   database_url: process.env.DATABASE_URL,
   default_pass: process.env.DEFAULT_PASS,
   bycrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
+  CLOUD_NAME: process.env.CLOUD_NAME,
+  API_KEY: process.env.API_KEY,
+  API_SECRET: process.env.API_SECRET,
+
   jwt: {
     secret: process.env.JWT_SECRET,
     refresh_secret: process.env.JWT_REFRESH_SECRET,

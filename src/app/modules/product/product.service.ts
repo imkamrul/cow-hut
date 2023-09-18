@@ -1,3 +1,4 @@
+import fileUpload from "express-fileupload";
 import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
 import { Document, SortOrder, Types } from "mongoose";
@@ -6,14 +7,20 @@ import { calculatePagination } from "../../common/pagination";
 import { IPaginationOptions } from "../../common/pagination.interface";
 import ApiError from "../../errors/ApiError";
 import { IGenericResponse } from "../../errors/error.interface";
+import { imageUploader } from "../../middleware/ImageUploader";
 import { role } from "../auth/auth.constant";
 import { productSearchableFields } from "./product.constat";
 import { IProduct, IProductsFilters } from "./product.interface";
 import { Product } from "./product.model";
 
 export const saveProduct = async (
-  product: IProduct
+  product: IProduct,
+  image: fileUpload.UploadedFile
 ): Promise<IProduct | null> => {
+  if (image) {
+    const img_url = await imageUploader(image, "product");
+    product.img_url = img_url;
+  }
   const result = await Product.create(product);
   return result;
 };
@@ -52,9 +59,14 @@ export const deleteProduct = async (
 export const updateProduct = async (
   id: string,
   user: JwtPayload,
-  payload: Partial<IProduct>
+  payload: Partial<IProduct>,
+  image: fileUpload.UploadedFile
 ): Promise<IProduct | null> => {
   let result = null;
+  if (image) {
+    const img_url = await imageUploader(image, "product");
+    payload.img_url = img_url;
+  }
   if (user?.role === role[1]) {
     result = await Product.findOneAndUpdate({ _id: id }, payload, {
       new: true,

@@ -19,8 +19,9 @@ import {
 
 export const createProduct: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
+    const image: any = req.files?.img_url;
     const userData = req.body;
-    const result = await saveProduct(userData);
+    const result = await saveProduct(userData, image);
 
     sendResponse<IProduct>(res, {
       success: true,
@@ -64,10 +65,11 @@ export const updateProductById: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.id;
     const user = req.user;
+    const image: any = req.files?.img_url;
     const productData = req.body;
     if (!user)
       throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
-    const result = await updateProduct(id, user, productData);
+    const result = await updateProduct(id, user, productData, image);
 
     sendResponse<IProduct>(res, {
       success: true,
