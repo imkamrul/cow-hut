@@ -78,7 +78,7 @@ export const getProfileUser: RequestHandler = catchAsync(
     sendResponse<IUser>(res, {
       statusCode: 200,
       success: true,
-      message: "User password update successfully !",
+      message: "User find successfully !",
       data: result,
     });
   }

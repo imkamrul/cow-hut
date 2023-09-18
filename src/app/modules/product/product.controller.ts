@@ -1,11 +1,15 @@
 import { Request, RequestHandler, Response } from "express";
 import httpStatus from "http-status";
 import catchAsync from "../../common/catchAsync";
+import { paginationFields } from "../../common/pagination";
+import pick from "../../common/pick";
 import sendResponse from "../../common/response";
 import ApiError from "../../errors/ApiError";
+import { productFilterOptions } from "./product.constat";
 import { IProduct } from "./product.interface";
 import {
   deleteProduct,
+  findAllProduct,
   getSingleProduct,
   multipleProductDelete,
   saveDummyProducts,
@@ -103,6 +107,21 @@ export const bulkDeleteProduct: RequestHandler = catchAsync(
       statusCode: httpStatus.OK,
       message: `${result} Product deleted successfully`,
       data: null,
+    });
+  }
+);
+
+export const getAllProduct: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const filters = pick(req.query, productFilterOptions);
+    const paginationOptions = pick(req.query, paginationFields);
+    const result = await findAllProduct(filters, paginationOptions);
+    sendResponse<IProduct[]>(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Users retrieved successfully",
+      meta: result?.meta,
+      data: result?.data,
     });
   }
 );

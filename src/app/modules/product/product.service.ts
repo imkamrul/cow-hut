@@ -1,10 +1,14 @@
 import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
-import { Document, Types } from "mongoose";
+import { Document, SortOrder, Types } from "mongoose";
 import { generateProductData } from "../../common/FakeDataGenerate";
+import { calculatePagination } from "../../common/pagination";
+import { IPaginationOptions } from "../../common/pagination.interface";
 import ApiError from "../../errors/ApiError";
+import { IGenericResponse } from "../../errors/error.interface";
 import { role } from "../auth/auth.constant";
-import { IProduct } from "./product.interface";
+import { productSearchableFields } from "./product.constat";
+import { IProduct, IProductsFilters } from "./product.interface";
 import { Product } from "./product.model";
 
 export const saveProduct = async (
@@ -76,14 +80,7 @@ export const saveDummyProducts = async (
   const products = Array.from({ length: Number(dataNumber) }, () =>
     generateProductData(sellerId)
   );
-  console.log(
-    "products :",
-    products,
-    "dataNumber :",
-    dataNumber,
-    "sellerId :",
-    sellerId
-  );
+
   try {
     const result = (await Product.create(products)) as (Document<
       unknown,
@@ -101,4 +98,57 @@ export const multipleProductDelete = async (
 ): Promise<number> => {
   const result = await Product.deleteMany({ _id: { $in: deleteProductIds } });
   return result.deletedCount || 0;
+};
+
+export const findAllProduct = async (
+  filters: IProductsFilters,
+  paginationOptions: IPaginationOptions
+): Promise<IGenericResponse<IProduct[]>> => {
+  const { searchTerm, ...filtersData } = filters;
+
+  const { page, limit, skip, sortBy, sortOrder } =
+    calculatePagination(paginationOptions);
+
+  const sortConditions: { [key: string]: SortOrder } = {};
+
+  if (sortBy && sortOrder) {
+    sortConditions[sortBy] = sortOrder;
+  }
+  const andConditions: { [key: string]: any }[] = [];
+
+  if (searchTerm) {
+    andConditions.push({
+      $or: productSearchableFields.map((field) => ({
+        [field]: {
+          $regex: searchTerm,
+          $options: "i",
+        },
+      })),
+    });
+  }
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+  const whereConditions =
+    andConditions.length > 0 ? { $and: andConditions } : {};
+
+  const result = await Product.find(whereConditions)
+
+    .sort(sortConditions)
+    .skip(skip)
+    .limit(limit);
+  const total = await Product.countDocuments(whereConditions);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
 };

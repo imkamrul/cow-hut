@@ -14,3 +14,11 @@ export type IProduct = {
 };
 
 export type ProductModel = Model<IProduct, Record<string, unknown>>;
+
+export type IProductsFilters = {
+  sortBy?: string;
+  sortOrder?: string;
+  name?: string;
+  price?: number;
+  searchTerm?: string;
+};

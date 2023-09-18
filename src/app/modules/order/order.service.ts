@@ -140,8 +140,6 @@ export const getSingleOrderById = async (
     filter = { ...filter, buyer: userInfo.id };
   }
 
-  console.log("filter:", filter);
-
   let result;
   if (userInfo?.role === role[0]) {
     result = await Order.findOne(filter).populate([
@@ -170,8 +168,6 @@ export const getSingleOrderById = async (
       },
     ]);
   }
-
-  console.log("result:", result);
 
   return result;
 };

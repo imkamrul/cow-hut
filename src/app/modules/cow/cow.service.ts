@@ -56,7 +56,7 @@ export const getAllCows = async (
   }
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
-  console.log(JSON.stringify(whereConditions, null, 2));
+
   const result = await Cow.find(whereConditions)
 
     .sort(sortConditions)

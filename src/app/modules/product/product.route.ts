@@ -9,6 +9,7 @@ import {
   createProduct,
   deleteProductById,
   generateDummyData,
+  getAllProduct,
   getProductById,
   updateProductById,
 } from "./product.controller";
@@ -23,6 +24,7 @@ router.post(
   createProduct
 );
 router.get("/single-product/:id", auth(role[1], role[2]), getProductById);
+router.get("/get-products", getAllProduct);
 router.get("/bulk-product-create", auth(role[1]), generateDummyData);
 router.post("/bulk-product-delete", auth(role[1]), bulkDeleteProduct);
 
