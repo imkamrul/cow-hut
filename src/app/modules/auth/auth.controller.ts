@@ -4,6 +4,7 @@ import catchAsync from "../../common/catchAsync";
 import { paginationFields } from "../../common/pagination";
 import pick from "../../common/pick";
 import sendResponse from "../../common/response";
+import ApiError from "../../errors/ApiError";
 import { userFilterOptions } from "./auth.constant";
 import { ILoginUserResponse, IUser } from "./auth.interface";
 import {
@@ -11,11 +12,11 @@ import {
   deleteUser,
   findAllUser,
   getSingleUser,
+  multipleUserDelete,
   saveUser,
   updateProfileInfo,
   updateUser,
   updateUserPassword,
-  updateUserRoleStatus,
 } from "./auth.service";
 
 export const createUser: RequestHandler = catchAsync(
@@ -85,30 +86,13 @@ export const getProfileUser: RequestHandler = catchAsync(
 
 export const updateProfileUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const { user } = req;
-    if (!user) {
-      return sendResponse(res, {
-        success: false,
-        statusCode: httpStatus.UNAUTHORIZED,
-        message: "User not authenticated",
-      });
-    }
     const updatedData = req.body;
-
-    const result = await updateProfileInfo(user?.id, updatedData);
-    sendResponse<IUser>(res, {
-      success: true,
-      statusCode: httpStatus.OK,
-      message: "User updated successfully",
-      data: result,
-    });
-  }
-);
-export const updateRoleStatusUser: RequestHandler = catchAsync(
-  async (req: Request, res: Response) => {
     const id = req.params.id;
-    const data = req.body;
-    const result = await updateUserRoleStatus(id, data);
+    const user = req.user;
+    if (!user)
+      throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
+
+    const result = await updateProfileInfo(id, user, updatedData);
     sendResponse<IUser>(res, {
       success: true,
       statusCode: httpStatus.OK,
@@ -117,10 +101,14 @@ export const updateRoleStatusUser: RequestHandler = catchAsync(
     });
   }
 );
+
 export const deleteUserById: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.id;
-    const result = await deleteUser(id);
+    const user = req.user;
+    if (!user)
+      throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
+    const result = await deleteUser(id, user);
 
     sendResponse<IUser>(res, {
       success: true,
@@ -141,6 +129,20 @@ export const getAllUser: RequestHandler = catchAsync(
       message: "Users retrieved successfully",
       meta: result?.meta,
       data: result?.data,
+    });
+  }
+);
+
+export const bulkDeleteUser: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const ids = req.body.ids;
+    const result = await multipleUserDelete(ids);
+
+    sendResponse<IUser[]>(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: `${result} User deleted successfully`,
+      data: null,
     });
   }
 );

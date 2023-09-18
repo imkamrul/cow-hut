@@ -4,6 +4,7 @@ import { tokenMatch } from "../../middleware/TokenMatch";
 import validateRequest from "../../middleware/validateRequest";
 import { role } from "./auth.constant";
 import {
+  bulkDeleteUser,
   createUser,
   deleteUserById,
   getAllUser,
@@ -12,7 +13,6 @@ import {
   logOutUser,
   passwordChangeUser,
   updateProfileUser,
-  updateRoleStatusUser,
 } from "./auth.controller";
 import {
   CreateLogInZodSchema,
@@ -21,22 +21,21 @@ import {
 } from "./auth.validation";
 const router = express.Router();
 router.post("/signup", validateRequest(CreateUserZodSchema), createUser);
+
+router.get("/profile/me", auth(...role), tokenMatch(), getProfileUser);
+router.get("/profile", auth(role[1]), tokenMatch(), getAllUser);
+router.patch("/profile/:id", auth(...role), updateProfileUser);
+router.delete("/profile/:id", auth(...role), deleteUserById);
+
 router.post("/login", validateRequest(CreateLogInZodSchema), logInUser);
-router.get("/logout", auth(...role), logOutUser);
-router.get("/me", auth(...role), tokenMatch(), getProfileUser);
-router.get("/all-user", getAllUser);
-router.post("/me", auth(...role), updateProfileUser);
-router.post(
-  "/profile/user-info-admin/:id",
-  auth(role[1]),
-  updateRoleStatusUser
-);
 router.post(
   "/password-change",
   auth(...role),
   validateRequest(CreatePasswordZodSchema),
   passwordChangeUser
 );
-router.delete("/profile/:id", auth(role[1]), deleteUserById);
+
+router.post("/bulk-user-delete", auth(role[1]), bulkDeleteUser);
+router.get("/logout", auth(...role), logOutUser);
 
 export const AuthRoutes = router;

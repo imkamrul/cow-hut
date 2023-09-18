@@ -48,6 +48,10 @@ const userSchema = new Schema<IUser>(
       required: false,
       enum: status,
     },
+    totalMoney: {
+      type: Number,
+      required: false,
+    },
     token: {
       type: String,
       required: false,
@@ -60,7 +64,7 @@ const userSchema = new Schema<IUser>(
 userSchema.pre("save", async function (next) {
   this.status = status[0];
   this.role = role[0];
-
+  this.totalMoney = 0;
   this.password = await bcrypt.hash(
     this.password,
     Number(config.bycrypt_salt_rounds)

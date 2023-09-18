@@ -17,7 +17,6 @@ export const auth =
       let verifiedUser = null;
 
       verifiedUser = verifyToken(token, config.jwt.secret as Secret);
-      console.log("verifiedUser :", verifiedUser, requiredRoles);
 
       req.user = verifiedUser;
 

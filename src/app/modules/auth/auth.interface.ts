@@ -14,6 +14,7 @@ export type IUser = {
   billing_address?: string;
   shipping_address?: string;
   token?: string | null;
+  totalMoney?: number;
 };
 export type UserModel = {
   isPasswordMatched(

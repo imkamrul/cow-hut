@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import httpStatus from "http-status";
-import { Secret } from "jsonwebtoken";
+import { JwtPayload, Secret } from "jsonwebtoken";
 import { SortOrder, Types } from "mongoose";
 import config from "../../../config";
 import { createToken } from "../../common/jwtHelpeer";
@@ -8,7 +8,7 @@ import { calculatePagination } from "../../common/pagination";
 import { IPaginationOptions } from "../../common/pagination.interface";
 import ApiError from "../../errors/ApiError";
 import { IGenericResponse } from "../../errors/error.interface";
-import { status, userSearchableFields } from "./auth.constant";
+import { role, status, userSearchableFields } from "./auth.constant";
 import {
   ILogInUser,
   ILoginUserResponse,
@@ -38,7 +38,6 @@ export const UserLogIn = async (
     emailPhone,
     password
   );
-  console.log("isUserExist :", isUserExist?.status);
   if (isUserExist?.status === status[2]) {
     throw new ApiError(
       httpStatus.NOT_FOUND,
@@ -130,11 +129,11 @@ export const updateUserPassword = async (
 
 export const updateProfileInfo = async (
   id: string | Types.ObjectId,
+  user: JwtPayload,
   payload: Partial<IUser>
 ): Promise<IUser | null> => {
-  if (payload.password) {
-    delete payload.password;
-  }
+  let result = null;
+
   const searchOption: SearchOptionUser = {
     _id: { $ne: id },
   };
@@ -157,44 +156,53 @@ export const updateProfileInfo = async (
       "Your email or phone number already exist !"
     );
   }
-  const updateProfile = await updateUser(id, payload);
-  const result = await User.findOne(
-    { _id: updateProfile?.id },
-    { password: 0, token: 0 }
-  );
+
+  if (user?.role === role[1]) {
+    if (payload.password) {
+      payload.password = await bcrypt.hash(
+        payload.password,
+        Number(config.bycrypt_salt_rounds)
+      );
+    }
+    const updateProfile = await updateUser(id, payload);
+    result = await User.findOne(
+      { _id: updateProfile?.id },
+      { password: 0, token: 0 }
+    );
+  } else {
+    if (payload.password) {
+      delete payload.password;
+    }
+    if (payload?.role) {
+      delete payload.role;
+    }
+    if (payload?.status) {
+      delete payload.status;
+    }
+
+    const updateProfile = await updateUser(id, payload);
+    result = await User.findOne(
+      { _id: updateProfile?.id },
+      { password: 0, token: 0 }
+    );
+  }
+
   return result;
 };
 
-export const deleteUser = async (id: string): Promise<IUser | null> => {
-  const result = await User.findByIdAndDelete({ _id: id });
-
+export const deleteUser = async (
+  id: string,
+  user: JwtPayload
+): Promise<IUser | null> => {
+  let result = null;
+  if (user?.role === role[1] || id === user?.id) {
+    result = await User.findByIdAndDelete({ _id: id });
+  } else {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden Access");
+  }
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found !");
   }
-  return result;
-};
-export const updateUserRoleStatus = async (
-  id: string,
-  payload: Partial<IUser>
-): Promise<IUser | null> => {
-  if (payload.password) {
-    payload.password = await bcrypt.hash(
-      payload.password,
-      Number(config.bycrypt_salt_rounds)
-    );
-  }
-  const updateProfileStatus = await User.findOneAndUpdate(
-    { _id: id },
-    payload,
-    {
-      new: true,
-    }
-  );
-  const result = await User.findOne(
-    { _id: updateProfileStatus?.id },
-    { password: 0, token: 0 }
-  );
-
   return result;
 };
 
@@ -233,8 +241,7 @@ export const findAllUser = async (
   }
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
-  console.log("sortConditions :", sortConditions);
-  console.log("whereConditions :", whereConditions);
+
   const result = await User.find(whereConditions)
 
     .sort(sortConditions)
@@ -250,4 +257,11 @@ export const findAllUser = async (
     },
     data: result,
   };
+};
+
+export const multipleUserDelete = async (
+  deleteProductIds: string[]
+): Promise<number> => {
+  const result = await User.deleteMany({ _id: { $in: deleteProductIds } });
+  return result.deletedCount || 0;
 };
